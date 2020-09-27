@@ -21,7 +21,7 @@ const App = () => {
         setComments([]);
         const postData = () => {
             axios
-                .post('http://localhost:8000/api/', {
+                .post('https://fast-cliffs-91740.herokuapp.com/api/', {
                     user: query,
                 })
                 .then((response) => {
