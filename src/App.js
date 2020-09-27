@@ -15,74 +15,77 @@ const App = () => {
     let loadingGif = document.getElementById('loadingGif');
 
     const firstUpdate = useRef(true);
-    useEffect(() => {
-        setLinks([]);
-        setPositives([]);
-        setComments([]);
-        const postData = async () => {
-            axios
-                .post('http://localhost:8000/api/', {
-                    user: query.toLowerCase().trim().replace(' ', ''),
-                })
-                .then((response) => {
-                    console.log(response.data);
+    useEffect(
+        (loadingGif, query) => {
+            setLinks([]);
+            setPositives([]);
+            setComments([]);
+            const postData = async () => {
+                axios
+                    .post('http://localhost:8000/api/', {
+                        user: query.toLowerCase().trim().replace(' ', ''),
+                    })
+                    .then((response) => {
+                        console.log(response.data);
 
-                    if (response.data.status === 'error') {
-                        setResult(
-                            'A user with this username could not be found.'
-                        );
-                        setResColor('red');
-                        setStatus(
-                            "User not found. This user's may be banned, removed or NSFW."
-                        );
-                        loadingGif.removeAttribute('src');
-                        return;
-                    } else {
-                        let sum = 0;
-                        let indexes = [];
+                        if (response.data.status === 'error') {
+                            setResult(
+                                'A user with this username could not be found.'
+                            );
+                            setResColor('red');
+                            setStatus(
+                                "User not found. This user's may be banned, removed or NSFW."
+                            );
+                            loadingGif.removeAttribute('src');
+                            return;
+                        } else {
+                            let sum = 0;
+                            let indexes = [];
 
-                        for (
-                            let i = 0;
-                            i < response.data.predictions.length;
-                            i++
-                        ) {
-                            sum = sum + response.data.predictions[i];
-                            if (response.data.predictions[i] === 1) {
-                                indexes.push(i);
+                            for (
+                                let i = 0;
+                                i < response.data.predictions.length;
+                                i++
+                            ) {
+                                sum = sum + response.data.predictions[i];
+                                if (response.data.predictions[i] === 1) {
+                                    indexes.push(i);
+                                }
                             }
+
+                            setStatus('Done!');
+                            setLinks(response.data.links);
+                            setComments(response.data.comments);
+                            setPositives(indexes);
+
+                            loadingGif.removeAttribute('src');
+                            setResult(
+                                sum >= 1
+                                    ? 'I think this user has toxic comments'
+                                    : "I don't think this user has toxic comments"
+                            );
+                            setResColor(() => {
+                                if (sum >= 1) {
+                                    return 'red';
+                                } else {
+                                    return 'green';
+                                }
+                            });
                         }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            };
 
-                        setStatus('Done!');
-                        setLinks(response.data.links);
-                        setComments(response.data.comments);
-                        setPositives(indexes);
-
-                        loadingGif.removeAttribute('src');
-                        setResult(
-                            sum >= 1
-                                ? 'I think this user has toxic comments'
-                                : "I don't think this user has toxic comments"
-                        );
-                        setResColor(() => {
-                            if (sum >= 1) {
-                                return 'red';
-                            } else {
-                                return 'green';
-                            }
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        };
-
-        if (firstUpdate.current) {
-            firstUpdate.current = false;
-            return;
-        }
-        postData();
-    }, [submit]);
+            if (firstUpdate.current) {
+                firstUpdate.current = false;
+                return;
+            }
+            postData();
+        },
+        [submit]
+    );
 
     const handleChange = (e) => {
         // console.log(`query: ${query}`);
