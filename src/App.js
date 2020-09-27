@@ -151,7 +151,11 @@ const App = () => {
                             style={{ color: 'black' }}
                         >
                             {status}
-                            <img id="loadingGif" width="195px" />
+                            <img
+                                id="loadingGif"
+                                width="195px"
+                                alt="loading Gif"
+                            />
                         </span>
                     </div>
 
@@ -168,7 +172,7 @@ const App = () => {
                         </div>
                     </div>
                     <div className="container-contact100-form-btn">
-                        {resColor == 'green' ? (
+                        {resColor === 'green' ? (
                             <span
                                 className="contact100-more"
                                 style={{ color: 'black' }}
