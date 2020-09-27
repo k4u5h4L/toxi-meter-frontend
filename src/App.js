@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 
+// app component
 const App = () => {
     const [query, setQuery] = useState('');
     const [result, setResult] = useState('Your results will be shown here');
