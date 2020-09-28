@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 
-// app component
 const App = () => {
     const [query, setQuery] = useState('');
     const [result, setResult] = useState('Your results will be shown here');
@@ -20,15 +19,16 @@ const App = () => {
         setLinks([]);
         setPositives([]);
         setComments([]);
-        const postData = () => {
+        const postData = async () => {
             axios
-                .post('https://fast-cliffs-91740.herokuapp.com/api/', {
+                .post('https://toxicitypred.herokuapp.com/api/', {
                     user: query,
                 })
                 .then((response) => {
-                    console.log(response.data);
+                    const res = JSON.parse(response.data);
+                    console.log(res);
 
-                    if (response.data.status === 'error') {
+                    if (res.status === 'error') {
                         setResult(
                             'A user with this username could not be found.'
                         );
@@ -42,20 +42,18 @@ const App = () => {
                         let sum = 0;
                         let indexes = [];
 
-                        for (
-                            let i = 0;
-                            i < response.data.predictions.length;
-                            i++
-                        ) {
-                            sum = sum + response.data.predictions[i];
-                            if (response.data.predictions[i] === 1) {
+                        for (let i = 0; i < res.predictions.length; i++) {
+                            sum = sum + res.predictions[i];
+                            if (res.predictions[i] === 1) {
                                 indexes.push(i);
                             }
                         }
 
-                        setStatus('Done!');
-                        setLinks(response.data.links);
-                        setComments(response.data.comments);
+                        setStatus(
+                            'Done! I have seen 10 recent comments made by this user.'
+                        );
+                        setLinks(res.links);
+                        setComments(res.comments);
                         setPositives(indexes);
 
                         loadingGif.removeAttribute('src');
@@ -83,7 +81,6 @@ const App = () => {
             return;
         }
         postData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [submit]);
 
     const handleChange = (e) => {
@@ -150,7 +147,7 @@ const App = () => {
                             style={{ color: 'black' }}
                         >
                             {status}
-                            <img id="loadingGif" width="195px" alt="" />
+                            <img id="loadingGif" width="195px" />
                         </span>
                     </div>
 
@@ -167,12 +164,12 @@ const App = () => {
                         </div>
                     </div>
                     <div className="container-contact100-form-btn">
-                        {resColor === 'green' ? (
+                        {resColor == 'green' ? (
                             <span
                                 className="contact100-more"
                                 style={{ color: 'black' }}
                             >
-                                This user doesn't have any toxic comments!"
+                                This user doesn't have any toxic comments!
                             </span>
                         ) : (
                             <ul>
